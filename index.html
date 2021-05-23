@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                margin: 0;
+            }
+            canvas {
+                position: fixed;
+                top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+            }
+        </style>
+    </head>
+    <body>
+        <canvas width=600 height=500 id="c4"></canvas>
+        <canvas width=600 height=500 id="c3"></canvas>
+        <canvas width=600 height=500 id="c2"></canvas>
+        <canvas width=600 height=500 id="c1"></canvas>
+        <canvas width=600 height=500 id="c0"></canvas>
+        <script>
+            var c0 = document.getElementById("c0");
+            var c1 = document.getElementById("c1");
+            var c2 = document.getElementById("c2");
+            var c3 = document.getElementById("c3");
+            var c4 = document.getElementById("c4");
+            var ctx0 = c0.getContext("2d");
+            var ctx1 = c1.getContext("2d");
+            var ctx2 = c2.getContext("2d");
+            var ctx3 = c3.getContext("2d");
+            var ctx4 = c4.getContext("2d");
+            
+            ctx1.fillStyle = "red";
+            ctx1.fillRect(0,0,c1.width, c1.height);
+            ctx1.fillStyle = "black";
+            ctx1.font = "35px serif";
+            ctx1.fillText("Poland Government and Politics", 70,240);
+            
+            ctx2.fillStyle = "green";
+            ctx2.fillRect(0,0,c2.width, c2.height);
+            ctx2.fillStyle = "black";
+            ctx2.font = "20px serif";
+            ctx2.fillText("In 1948 Poland was run by the Polish United Worker's Party.", 70,240);
+            ctx2.fillText("Which was the country's communist party.", 70,270);
+            
+            ctx4.fillStyle = "blue";
+            ctx4.fillRect(0,0,c3.width, c3.height);
+            ctx4.fillStyle = "black";
+            ctx4.font = "20px serif";
+            ctx4.fillText("The thrid polish republic began in 1989. The communists were", 70,240);
+            ctx4.fillText("beginning to fail in the poles.", 70,270);
+            
+            ctx3.fillStyle = "yellow";
+            ctx3.fillRect(0,0,c4.width, c4.height);
+            ctx3.fillStyle = "black";
+            ctx3.font = "20px serif";
+            ctx3.fillText("The communist ruling didn't produce as prosperous times", 50,240);
+            ctx3.fillText("as some had hoped. In 1970 people started to protest because", 50,270);
+            ctx3.fillText("the prices in essential consumer goods was increasing", 50,300);
+            
+            class BoxThing {
+                constructor(x, y, w, h) {
+                    this.width = w;
+                    this.height = h;
+                    this.x = x;
+                    this.y = y;
+                    
+                    this.img = new Image(383, 212);
+                    this.img.src = 'eraser.png';
+                }
+                
+                setPos(x, y) {
+                    this.x = x;
+                    this.y = y;
+                }
+                
+                draw() {
+                    ctx0.drawImage(this.img, this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                }
+            }
+            
+            var eraser = new BoxThing(10, 10, 160, 140);
+            var layer = 1;
+            
+            function mouseMove(evt) {
+                eraser.setPos(evt.offsetX, evt.offsetY);
+                ctx0.clearRect(0, 0, c0.width, c0.height)
+                eraser.draw();
+                
+                for (let i = 1; i < layer; i++) {
+                    let imgData = window["ctx" + i].getImageData(eraser.x, eraser.y, 1, 1);
+                    if (imgData.data[3] != 0) {
+                        return;
+                    }
+                }
+                console.log(layer);
+                window["ctx" + layer].clearRect(eraser.x - 25, eraser.y - 25, 50, 50);
+
+            }
+            
+            function mouseReleased() {
+                //console.log("up");
+                c0.removeEventListener('mouseup', mouseReleased);
+                document.removeEventListener('mousemove', mouseMove);
+            }
+            
+            function mousePressed(evt) {
+                //console.log("down");
+                c0.addEventListener('mouseup', mouseReleased);
+                document.addEventListener('mousemove', mouseMove);
+                
+                for (let i = 1; i < 5; i++) {
+                    let imgData = window["ctx" + i].getImageData(eraser.x, eraser.y, 1, 1);
+                    if (imgData.data[3] != 0) {
+                        console.log(i);
+                        layer = i;
+                        return;
+                    }
+                }
+            }
+            
+            c0.addEventListener('mousedown', mousePressed);
+            
+        </script>
+    </body>
+</html>
